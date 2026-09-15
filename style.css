@@ -76,7 +76,7 @@ button:disabled {
 #board {
   position: relative;
   display: grid;
-  background: #232945;
+  background: #ffffff;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
@@ -85,7 +85,8 @@ button:disabled {
 
 .cell {
   position: relative;
-  background: #4a5290;
+  background: #ffffff;
+  border: 1px solid #d7dae2;
   border-radius: 3px;
   display: flex;
   align-items: center;
@@ -93,21 +94,23 @@ button:disabled {
 }
 
 .cell.start {
-  background: #2f4a3a;
+  background: #d9f2df;
+  border-color: #9bd7ab;
 }
 
 .cell.goal {
-  background: #4a3a2f;
+  background: #f7e6cf;
+  border-color: #e0b57f;
 }
 
 .cell.reachable {
-  background: #3a4270;
+  background: #ece7ff;
   cursor: pointer;
-  box-shadow: inset 0 0 0 2px #6c78ff;
+  box-shadow: inset 0 0 0 2px #7c5cff;
 }
 
 .cell.reachable:hover {
-  background: #464f8f;
+  background: #ddd5ff;
 }
 
 .player-token {
@@ -124,22 +127,25 @@ button:disabled {
 
 .wall-black {
   background: #000000;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
 }
 
 .wall-red {
   background: #d1453b;
-  box-shadow: 0 0 6px rgba(209, 69, 59, 0.7);
 }
 
 .wall-blue {
-  background: #3f8ee0;
-  box-shadow: 0 0 6px rgba(63, 142, 224, 0.7);
+  background: #2f6fd6;
 }
 
 .wall-green {
-  background: #45b26b;
-  box-shadow: 0 0 6px rgba(69, 178, 107, 0.7);
+  background: #2f9e5c;
+}
+
+/* A blue slot that isn't currently active - a faint preview of where a
+   blue wall CAN appear, so it never looks like it comes from nowhere. */
+.wall-ghost-blue {
+  background: rgba(63, 142, 224, 0.45);
+  box-shadow: 0 0 0 1px rgba(47, 111, 214, 0.5);
 }
 
 .status-line {
@@ -168,9 +174,10 @@ button:disabled {
   vertical-align: middle;
 }
 
-.legend .swatch.start { background: #2f4a3a; }
-.legend .swatch.goal { background: #4a3a2f; }
-.legend .swatch.wall-black { background: #000000; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45); }
+.legend .swatch.start { background: #d9f2df; box-shadow: 0 0 0 1px #9bd7ab; }
+.legend .swatch.goal { background: #f7e6cf; box-shadow: 0 0 0 1px #e0b57f; }
+.legend .swatch.wall-black { background: #000000; }
 .legend .swatch.wall-red { background: #d1453b; }
-.legend .swatch.wall-blue { background: #3f8ee0; }
-.legend .swatch.wall-green { background: #45b26b; }
+.legend .swatch.wall-blue { background: #2f6fd6; }
+.legend .swatch.wall-green { background: #2f9e5c; }
+.legend .swatch.wall-ghost-blue { background: rgba(63, 142, 224, 0.28); box-shadow: 0 0 0 1px rgba(63, 142, 224, 0.5); }

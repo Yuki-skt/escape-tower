@@ -82,6 +82,29 @@ UI.renderBoard = function (container, game, callbacks) {
       container.appendChild(wall);
     }
   }
+
+  // Blue slots that are currently inactive get a faint preview marker, so
+  // the fixed set of possible blue-wall spots is always visible - only
+  // shown while the blue system is actually in control (not during green).
+  if (game.dynamicMode === 'blue') {
+    for (let i = 0; i < game.blueSlots.length; i++) {
+      const slot = game.blueSlots[i];
+      const current = slot.type === 'h' ? board.horizontal[slot.r][slot.c] : board.vertical[slot.r][slot.c];
+      if (current === Engine.WALL_COLORS.BLUE) continue; // already drawn above as an active wall
+
+      const ghost = document.createElement('div');
+      if (slot.type === 'h') {
+        ghost.className = 'wall wall-h wall-ghost-blue';
+        ghost.style.gridColumn = (2 * slot.c + 1) + ' / ' + (2 * slot.c + 2);
+        ghost.style.gridRow = (2 * slot.r + 2) + ' / ' + (2 * slot.r + 3);
+      } else {
+        ghost.className = 'wall wall-v wall-ghost-blue';
+        ghost.style.gridColumn = (2 * slot.c + 2) + ' / ' + (2 * slot.c + 3);
+        ghost.style.gridRow = (2 * slot.r + 1) + ' / ' + (2 * slot.r + 2);
+      }
+      container.appendChild(ghost);
+    }
+  }
 };
 
 UI.renderStatus = function (el, game) {

@@ -2,7 +2,18 @@
 window.UI = window.UI || {};
 
 UI.CELL_SIZE = 52;
-UI.GAP_SIZE = 6;
+UI.GAP_SIZE = 4;
+UI.MIN_CELL_SIZE = 24;
+UI.MAX_CELL_SIZE = 52;
+UI.BOARD_PADDING = 20; // 10px on each side, must match #board padding in CSS
+
+// Recomputes CELL_SIZE so the board's true (unscaled) layout width fits
+// `availableWidth`, instead of rendering at a fixed size and visually
+// shrinking it with a CSS transform (which broke the page layout on phones).
+UI.computeSizes = function (size, availableWidth) {
+  const raw = (availableWidth - UI.BOARD_PADDING - (size - 1) * UI.GAP_SIZE) / size;
+  UI.CELL_SIZE = Math.max(UI.MIN_CELL_SIZE, Math.min(UI.MAX_CELL_SIZE, Math.floor(raw)));
+};
 
 UI.buildTemplate = function (size) {
   const parts = [];
@@ -85,20 +96,6 @@ UI.renderStatus = function (el, game) {
   }
 };
 
-// Shrinks the board (via CSS transform) to fit narrow screens like phones,
-// without changing the fixed pixel layout used for wall/cell positioning.
-UI.fitBoardToViewport = function (boardEl, wrapEl) {
-  boardEl.style.transform = 'none';
-  const naturalWidth = boardEl.offsetWidth;
-  const naturalHeight = boardEl.offsetHeight;
-  const available = wrapEl.clientWidth;
-  const scale = Math.min(1, available / naturalWidth);
-
-  if (scale < 1) {
-    boardEl.style.transform = 'scale(' + scale + ')';
-  }
-  wrapEl.style.height = Math.ceil(naturalHeight * scale) + 'px';
-};
 
 UI.renderDynamicStatus = function (el, game) {
   const nextRedTurn = Engine.RED_RESHUFFLE_INTERVAL - (game.turnCount % Engine.RED_RESHUFFLE_INTERVAL);

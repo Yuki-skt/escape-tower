@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const greenTestBtn = document.getElementById('green-test-btn');
 
   function refresh() {
+    UI.computeSizes(game.board.size, boardWrapEl.clientWidth);
     UI.renderBoard(boardEl, game, {
       onCellClick: function (r, c) {
         Engine.movePlayer(game, r, c);
@@ -20,11 +21,12 @@ document.addEventListener('DOMContentLoaded', function () {
     rollBtn.disabled = game.remainingSteps > 0 || game.won;
     endTurnBtn.disabled = game.remainingSteps === 0 || game.won;
     greenTestBtn.disabled = game.won || game.dynamicMode === 'green';
-    UI.fitBoardToViewport(boardEl, boardWrapEl);
   }
 
+  let resizeTimer = null;
   window.addEventListener('resize', function () {
-    UI.fitBoardToViewport(boardEl, boardWrapEl);
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(refresh, 100);
   });
 
   rollBtn.addEventListener('click', function () {

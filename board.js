@@ -131,18 +131,24 @@ Engine.clearColor = function (board, color) {
 
 // Places up to `count` walls of `color` into currently-empty edges only,
 // skipping any placement that would cut `from` off from `to`. Used for the
-// dynamic (red/blue/green) wall types, which never overwrite an existing wall.
-Engine.placeRandomWalls = function (board, color, count, from, to) {
+// dynamic (red/green) wall types, which never overwrite an existing wall.
+// `exclude`, if given, is a Set of "type,r,c" keys that are never used (e.g.
+// the fixed blue-wall slots, so red never temporarily steals a blue spot).
+Engine.placeRandomWalls = function (board, color, count, from, to, exclude) {
   const size = board.size;
   const candidates = [];
   for (let r = 0; r < size - 1; r++) {
     for (let c = 0; c < size; c++) {
-      if (!board.horizontal[r][c]) candidates.push({ type: 'h', r: r, c: c });
+      if (board.horizontal[r][c]) continue;
+      if (exclude && exclude.has('h,' + r + ',' + c)) continue;
+      candidates.push({ type: 'h', r: r, c: c });
     }
   }
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size - 1; c++) {
-      if (!board.vertical[r][c]) candidates.push({ type: 'v', r: r, c: c });
+      if (board.vertical[r][c]) continue;
+      if (exclude && exclude.has('v,' + r + ',' + c)) continue;
+      candidates.push({ type: 'v', r: r, c: c });
     }
   }
   Engine.shuffleArray(candidates);

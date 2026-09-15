@@ -81,12 +81,11 @@ button:disabled {
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   margin: 0 auto;
-  transform-origin: top center;
 }
 
 .cell {
   position: relative;
-  background: #363d68;
+  background: #4a5290;
   border-radius: 3px;
   display: flex;
   align-items: center;
@@ -124,8 +123,8 @@ button:disabled {
 }
 
 .wall-black {
-  background: #050608;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+  background: #000000;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
 }
 
 .wall-red {
@@ -153,7 +152,8 @@ button:disabled {
 .legend {
   margin-top: 16px;
   display: flex;
-  gap: 18px;
+  flex-wrap: wrap;
+  gap: 8px 18px;
   justify-content: center;
   font-size: 12px;
   color: #b7bbdc;
@@ -170,7 +170,7 @@ button:disabled {
 
 .legend .swatch.start { background: #2f4a3a; }
 .legend .swatch.goal { background: #4a3a2f; }
-.legend .swatch.wall-black { background: #0a0a0a; }
+.legend .swatch.wall-black { background: #000000; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45); }
 .legend .swatch.wall-red { background: #d1453b; }
 .legend .swatch.wall-blue { background: #3f8ee0; }
 .legend .swatch.wall-green { background: #45b26b; }

@@ -24,8 +24,10 @@ Engine.createGame = function (size) {
     won: false,
     dynamicMode: 'blue', // 'blue' or 'green' - mutually exclusive
     greenTurnsLeft: 0,
+    blueSlots: [], // fixed positions; only which ones are "on" ever changes
   };
 
+  Engine.generateBlueSlots(game);
   Engine.reshuffleRedWalls(game);
   Engine.refreshBlueWalls(game);
   return game;
@@ -39,18 +41,77 @@ Engine.playerPos = function (game) {
   return [game.player.r, game.player.c];
 };
 
-Engine.reshuffleRedWalls = function (game) {
-  Engine.clearColor(game.board, Engine.WALL_COLORS.RED);
-  Engine.placeRandomWalls(game.board, Engine.WALL_COLORS.RED, Engine.RED_WALL_COUNT, Engine.playerPos(game), game.goal);
+// Picks a fixed set of edges that blue walls are allowed to occupy. The set
+// itself never moves; only how many of them are active changes turn to turn
+// (see refreshBlueWalls). Validated so the goal stays reachable even if every
+// slot were active at once.
+Engine.generateBlueSlots = function (game) {
+  const board = game.board;
+  const size = board.size;
+  const candidates = [];
+  for (let r = 0; r < size - 1; r++) {
+    for (let c = 0; c < size; c++) {
+      if (!board.horizontal[r][c]) candidates.push({ type: 'h', r: r, c: c });
+    }
+  }
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size - 1; c++) {
+      if (!board.vertical[r][c]) candidates.push({ type: 'v', r: r, c: c });
+    }
+  }
+  Engine.shuffleArray(candidates);
+
+  const slots = [];
+  for (let i = 0; i < candidates.length && slots.length < Engine.BLUE_MAX_COUNT; i++) {
+    const cand = candidates[i];
+    if (cand.type === 'h') board.horizontal[cand.r][cand.c] = Engine.WALL_COLORS.BLUE;
+    else board.vertical[cand.r][cand.c] = Engine.WALL_COLORS.BLUE;
+
+    if (Engine.isReachable(board, game.start, game.goal)) {
+      slots.push(cand);
+    } else if (cand.type === 'h') {
+      board.horizontal[cand.r][cand.c] = null;
+    } else {
+      board.vertical[cand.r][cand.c] = null;
+    }
+  }
+  // These are reserved *slots*, not active walls yet - clear them back off.
+  Engine.clearColor(board, Engine.WALL_COLORS.BLUE);
+  game.blueSlots = slots;
 };
 
+Engine.blueSlotExcludeSet = function (game) {
+  const set = new Set();
+  for (let i = 0; i < game.blueSlots.length; i++) {
+    const s = game.blueSlots[i];
+    set.add(s.type + ',' + s.r + ',' + s.c);
+  }
+  return set;
+};
+
+Engine.reshuffleRedWalls = function (game) {
+  Engine.clearColor(game.board, Engine.WALL_COLORS.RED);
+  Engine.placeRandomWalls(
+    game.board, Engine.WALL_COLORS.RED, Engine.RED_WALL_COUNT,
+    Engine.playerPos(game), game.goal, Engine.blueSlotExcludeSet(game)
+  );
+};
+
+// Turns a subset of the fixed blue slots on/off based on distance to the
+// goal - the positions themselves never change, only how many are active.
 Engine.refreshBlueWalls = function (game) {
-  Engine.clearColor(game.board, Engine.WALL_COLORS.BLUE);
-  const size = game.board.size;
+  const board = game.board;
+  Engine.clearColor(board, Engine.WALL_COLORS.BLUE);
+  const size = board.size;
   const dist = Math.abs(game.player.r - game.goal[0]) + Math.abs(game.player.c - game.goal[1]);
   const maxDist = (size - 1) * 2;
-  const count = Math.round(Engine.BLUE_MAX_COUNT * (dist / maxDist));
-  Engine.placeRandomWalls(game.board, Engine.WALL_COLORS.BLUE, count, Engine.playerPos(game), game.goal);
+  const count = Math.round(game.blueSlots.length * (dist / maxDist));
+
+  for (let i = 0; i < count && i < game.blueSlots.length; i++) {
+    const slot = game.blueSlots[i];
+    if (slot.type === 'h') board.horizontal[slot.r][slot.c] = Engine.WALL_COLORS.BLUE;
+    else board.vertical[slot.r][slot.c] = Engine.WALL_COLORS.BLUE;
+  }
 };
 
 // Stand-in for Phase 3's skill cards: activating a green-wall effect always

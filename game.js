@@ -3,16 +3,18 @@ window.Engine = window.Engine || {};
 
 Engine.RED_RESHUFFLE_INTERVAL = 3; // red walls reshuffle every N turns
 Engine.RED_WALL_COUNT = 6;
-Engine.BLUE_MAX_COUNT = 6; // scales down to 0 as the player nears the goal
+Engine.BLUE_MAX_COUNT = 6; // size of the fixed slot pool blue walls can occupy
+Engine.BLUE_ACTIVE_COUNT = 3; // how many of those slots are active at once - constant, not distance-based
 Engine.GREEN_WALL_COUNT = 4;
 Engine.GREEN_EVENT_DURATION = 3; // turns the green walls stay up before reverting to blue
+Engine.BLACK_WALL_DENSITY = 0.28; // 80% of the original 0.35
 
 Engine.createGame = function (size) {
   size = size || 9;
   const board = Engine.createBoard(size);
   const start = [size - 1, 0];
   const goal = [0, size - 1];
-  Engine.generateBlackWalls(board, start, goal, 0.35);
+  Engine.generateBlackWalls(board, start, goal, Engine.BLACK_WALL_DENSITY);
 
   const game = {
     board: board,
@@ -24,7 +26,7 @@ Engine.createGame = function (size) {
     won: false,
     dynamicMode: 'blue', // 'blue' or 'green' - mutually exclusive
     greenTurnsLeft: 0,
-    blueSlots: [], // fixed positions; only which ones are "on" ever changes
+    blueSlots: [], // fixed candidate positions; a constant-size subset is active at a time
   };
 
   Engine.generateBlueSlots(game);
@@ -97,18 +99,19 @@ Engine.reshuffleRedWalls = function (game) {
   );
 };
 
-// Turns a subset of the fixed blue slots on/off based on distance to the
-// goal - the positions themselves never change, only how many are active.
+// Activates a fixed-size subset of the blue slots - always the same COUNT
+// regardless of distance to the goal. Which specific slots are active is
+// re-rolled each call, but always from the same fixed slot pool.
 Engine.refreshBlueWalls = function (game) {
   const board = game.board;
   Engine.clearColor(board, Engine.WALL_COLORS.BLUE);
-  const size = board.size;
-  const dist = Math.abs(game.player.r - game.goal[0]) + Math.abs(game.player.c - game.goal[1]);
-  const maxDist = (size - 1) * 2;
-  const count = Math.round(game.blueSlots.length * (dist / maxDist));
 
-  for (let i = 0; i < count && i < game.blueSlots.length; i++) {
-    const slot = game.blueSlots[i];
+  const pool = game.blueSlots.slice();
+  Engine.shuffleArray(pool);
+  const count = Math.min(Engine.BLUE_ACTIVE_COUNT, pool.length);
+
+  for (let i = 0; i < count; i++) {
+    const slot = pool[i];
     if (slot.type === 'h') board.horizontal[slot.r][slot.c] = Engine.WALL_COLORS.BLUE;
     else board.vertical[slot.r][slot.c] = Engine.WALL_COLORS.BLUE;
   }

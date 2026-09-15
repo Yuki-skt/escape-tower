@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>脱出タワー(仮)</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+  <h1>脱出タワー(仮) <span class="phase-tag">Phase 2: 動的な壁(赤・青・緑)</span></h1>
+
+  <div class="controls">
+    <button id="roll-btn">サイコロを振る</button>
+    <button id="end-turn-btn">ターン終了</button>
+    <button id="green-test-btn" title="Phase3でスキルカードに置き換わる仮ボタン">緑壁を発動(テスト用)</button>
+  </div>
+  <div id="status" class="status"></div>
+  <div id="dynamic-status" class="status-line"></div>
+
+  <div id="board-scale-wrap">
+    <div id="board"></div>
+  </div>
+
+  <div class="legend">
+    <span><i class="swatch start"></i>スタート</span>
+    <span><i class="swatch goal"></i>ゴール</span>
+    <span><i class="swatch wall-black"></i>黒(固定)</span>
+    <span><i class="swatch wall-red"></i>赤(定期的に再配置)</span>
+    <span><i class="swatch wall-blue"></i>青(距離に応じ自動増減)</span>
+    <span><i class="swatch wall-green"></i>緑(カード発動時のみ)</span>
+  </div>
+</div>
+
+<script src="board.js"></script>
+<script src="game.js"></script>
+<script src="render.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

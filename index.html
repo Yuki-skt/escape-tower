@@ -8,33 +8,50 @@
 </head>
 <body>
 <div class="page">
-  <h1>脱出タワー(仮) <span class="phase-tag">Phase 2: 動的な壁(赤・青・緑)</span></h1>
+  <h1>脱出タワー(仮) <span class="phase-tag">Phase 3: キャラクター & スキルカード</span></h1>
 
-  <div class="controls">
-    <button id="roll-btn">サイコロを振る</button>
-    <button id="end-turn-btn">ターン終了</button>
-    <button id="green-test-btn" title="Phase3でスキルカードに置き換わる仮ボタン">緑壁を発動(テスト用)</button>
-  </div>
-  <div id="status" class="status"></div>
-  <div id="dynamic-status" class="status-line"></div>
-
-  <div id="board-scale-wrap">
-    <div id="board"></div>
+  <div id="character-select">
+    <h2>キャラクターを選んでください</h2>
+    <div id="character-list"></div>
   </div>
 
-  <div class="legend">
-    <span><i class="swatch start"></i>スタート</span>
-    <span><i class="swatch goal"></i>ゴール</span>
-    <span><i class="swatch wall-black"></i>黒(固定)</span>
-    <span><i class="swatch wall-red"></i>赤(定期的に再配置)</span>
-    <span><i class="swatch wall-blue"></i>青(出現中)</span>
-    <span><i class="swatch wall-ghost-blue"></i>青(未出現・ここに出る予定)</span>
-    <span><i class="swatch wall-green"></i>緑(カード発動時のみ)</span>
+  <div id="game-screen" hidden>
+    <div class="controls">
+      <button id="roll-btn">サイコロを振る</button>
+      <button id="end-turn-btn">ターン終了</button>
+      <button id="skill-btn"></button>
+    </div>
+
+    <div id="targeting-bar" class="targeting-bar" hidden>
+      <span id="targeting-message"></span>
+      <button id="cancel-target-btn">キャンセル</button>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="dynamic-status" class="status-line"></div>
+
+    <div id="board-scale-wrap">
+      <div id="board"></div>
+    </div>
+
+    <div id="hand-row" class="hand-row"></div>
+
+    <div class="legend">
+      <span><i class="swatch start"></i>スタート</span>
+      <span><i class="swatch goal"></i>ゴール</span>
+      <span><i class="swatch wall-black"></i>黒(固定)</span>
+      <span><i class="swatch wall-red"></i>赤(定期的に再配置)</span>
+      <span><i class="swatch wall-blue"></i>青(出現中)</span>
+      <span><i class="swatch wall-ghost-blue"></i>青(未出現・ここに出る予定)</span>
+      <span><i class="swatch wall-green"></i>緑(カード発動時のみ)</span>
+    </div>
   </div>
 </div>
 
 <script src="board.js"></script>
 <script src="game.js"></script>
+<script src="characters.js"></script>
+<script src="cards.js"></script>
 <script src="render.js"></script>
 <script src="main.js"></script>
 </body>

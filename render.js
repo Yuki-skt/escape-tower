@@ -24,15 +24,18 @@ UI.buildTemplate = function (size) {
   return parts.join(' ');
 };
 
-UI.renderBoard = function (container, game, callbacks) {
+UI.renderBoard = function (container, game, callbacks, options) {
+  options = options || {};
   const board = game.board;
   const size = board.size;
   container.innerHTML = '';
   container.style.gridTemplateColumns = UI.buildTemplate(size);
   container.style.gridTemplateRows = UI.buildTemplate(size);
 
-  const moves = Engine.availableMoves(game);
+  const moves = options.targeting ? [] : Engine.availableMoves(game);
   const moveSet = new Set(moves.map(function (m) { return m[0] + ',' + m[1]; }));
+
+  const pickupSet = new Set(game.cardPickups.map(function (p) { return p.r + ',' + p.c; }));
 
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
@@ -42,12 +45,20 @@ UI.renderBoard = function (container, game, callbacks) {
       if (r === game.goal[0] && c === game.goal[1]) cell.classList.add('goal');
       if (moveSet.has(r + ',' + c)) {
         cell.classList.add('reachable');
+        if (Engine.isLeapOnlyMove(game, r, c)) cell.classList.add('reachable-leap');
         cell.addEventListener('click', (function (rr, cc) {
           return function () { callbacks.onCellClick(rr, cc); };
         })(r, c));
       }
       cell.style.gridColumn = (2 * c + 1) + ' / ' + (2 * c + 2);
       cell.style.gridRow = (2 * r + 1) + ' / ' + (2 * r + 2);
+
+      if (pickupSet.has(r + ',' + c)) {
+        const pickup = document.createElement('div');
+        pickup.className = 'card-pickup';
+        pickup.textContent = '🃏';
+        cell.appendChild(pickup);
+      }
 
       if (r === game.player.r && c === game.player.c) {
         const token = document.createElement('div');
@@ -67,6 +78,12 @@ UI.renderBoard = function (container, game, callbacks) {
       wall.className = 'wall wall-h wall-' + color;
       wall.style.gridColumn = (2 * c + 1) + ' / ' + (2 * c + 2);
       wall.style.gridRow = (2 * r + 2) + ' / ' + (2 * r + 3);
+      if (options.targeting && (color === 'black' || color === 'red')) {
+        wall.classList.add('wall-targetable');
+        wall.addEventListener('click', (function (target) {
+          return function () { callbacks.onWallClick(target); };
+        })({ type: 'h', r: r, c: c }));
+      }
       container.appendChild(wall);
     }
   }
@@ -79,6 +96,12 @@ UI.renderBoard = function (container, game, callbacks) {
       wall.className = 'wall wall-v wall-' + color;
       wall.style.gridColumn = (2 * c + 2) + ' / ' + (2 * c + 3);
       wall.style.gridRow = (2 * r + 1) + ' / ' + (2 * r + 2);
+      if (options.targeting && (color === 'black' || color === 'red')) {
+        wall.classList.add('wall-targetable');
+        wall.addEventListener('click', (function (target) {
+          return function () { callbacks.onWallClick(target); };
+        })({ type: 'v', r: r, c: c }));
+      }
       container.appendChild(wall);
     }
   }
@@ -119,6 +142,54 @@ UI.renderStatus = function (el, game) {
   }
 };
 
+
+UI.renderCharacterSelect = function (container, onPick) {
+  container.innerHTML = '';
+  for (let i = 0; i < Engine.CHARACTERS.length; i++) {
+    const charDef = Engine.CHARACTERS[i];
+    const card = document.createElement('button');
+    card.className = 'character-card';
+    card.innerHTML =
+      '<div class="character-emoji">' + charDef.emoji + '</div>' +
+      '<div class="character-name">' + charDef.name + '</div>' +
+      '<div class="character-bio">' + charDef.bio + '</div>' +
+      '<div class="character-skill">「' + charDef.skillName + '」' + (charDef.maxUses) + '回まで</div>' +
+      '<div class="character-skill-desc">' + charDef.skillDesc + '</div>';
+    card.addEventListener('click', (function (id) {
+      return function () { onPick(id); };
+    })(charDef.id));
+    container.appendChild(card);
+  }
+};
+
+UI.renderHand = function (container, game, onUseCard) {
+  container.innerHTML = '';
+  if (game.hand.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'hand-empty';
+    empty.textContent = '手札: なし(盤面の🃏マスに乗ると入手できます)';
+    container.appendChild(empty);
+    return;
+  }
+  for (let i = 0; i < game.hand.length; i++) {
+    const card = Engine.getCard(game.hand[i]);
+    const btn = document.createElement('button');
+    btn.className = 'card-btn';
+    btn.disabled = game.won;
+    btn.innerHTML = '<div class="card-name">' + card.name + '</div><div class="card-desc">' + card.desc + '</div>';
+    btn.addEventListener('click', (function (idx) {
+      return function () { onUseCard(idx); };
+    })(i));
+    container.appendChild(btn);
+  }
+};
+
+UI.renderSkillButton = function (btn, game) {
+  const charDef = Engine.getCharacter(game.character.id);
+  btn.textContent = charDef.skillName + '(残り' + game.character.usesLeft + '回)';
+  btn.title = charDef.skillDesc;
+  btn.disabled = game.won || game.character.usesLeft <= 0;
+};
 
 UI.renderDynamicStatus = function (el, game) {
   const nextRedTurn = Engine.RED_RESHUFFLE_INTERVAL - (game.turnCount % Engine.RED_RESHUFFLE_INTERVAL);

@@ -113,6 +113,31 @@ button:disabled {
   background: #ddd5ff;
 }
 
+/* Only reachable because a leap charge is active - dashed ring instead of
+   solid, so it reads as "special", not a normal move. */
+.cell.reachable-leap {
+  background: #fff3d6;
+  box-shadow: inset 0 0 0 2px #e0a838;
+}
+
+.cell.reachable-leap:hover {
+  background: #ffe9b8;
+}
+
+.card-pickup {
+  position: absolute;
+  width: 55%;
+  height: 55%;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #b794f6, #7c3aed);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 55%;
+  color: #fff;
+}
+
 .player-token {
   width: 60%;
   height: 60%;
@@ -148,6 +173,15 @@ button:disabled {
   box-shadow: 0 0 0 1px rgba(47, 111, 214, 0.5);
 }
 
+.wall-targetable {
+  cursor: pointer;
+  box-shadow: 0 0 0 2px #ff9800, 0 0 8px rgba(255, 152, 0, 0.8);
+}
+
+.wall-targetable:hover {
+  box-shadow: 0 0 0 2px #ffb84d, 0 0 10px rgba(255, 184, 77, 0.9);
+}
+
 .status-line {
   min-height: 18px;
   font-size: 12px;
@@ -181,3 +215,126 @@ button:disabled {
 .legend .swatch.wall-blue { background: #2f6fd6; }
 .legend .swatch.wall-green { background: #2f9e5c; }
 .legend .swatch.wall-ghost-blue { background: rgba(63, 142, 224, 0.28); box-shadow: 0 0 0 1px rgba(63, 142, 224, 0.5); }
+
+/* Character select screen */
+#character-select h2 {
+  font-size: 16px;
+  font-weight: normal;
+  color: #c9cdf0;
+  margin-bottom: 16px;
+}
+
+#character-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+}
+
+.character-card {
+  width: 180px;
+  background: #232945;
+  border: 2px solid #363d68;
+  border-radius: 10px;
+  padding: 16px 12px;
+  color: #eee;
+  text-align: center;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.character-card:hover {
+  border-color: #7c5cff;
+  background: #2b3260;
+}
+
+.character-emoji {
+  font-size: 36px;
+  margin-bottom: 6px;
+}
+
+.character-name {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.character-bio {
+  font-size: 12px;
+  color: #9aa0c6;
+  margin-bottom: 10px;
+}
+
+.character-skill {
+  font-size: 13px;
+  color: #ffcf5c;
+  margin-bottom: 4px;
+}
+
+.character-skill-desc {
+  font-size: 11px;
+  color: #c9cdf0;
+}
+
+/* Targeting bar (skill/card asking the player to pick a wall) */
+.targeting-bar[hidden] {
+  display: none;
+}
+
+.targeting-bar {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  background: #3a2e12;
+  border: 1px solid #ff9800;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #ffd899;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.targeting-bar button {
+  font-size: 12px;
+  padding: 4px 12px;
+  background: #ff9800;
+}
+
+/* Hand of skill cards */
+.hand-row {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.hand-empty {
+  font-size: 12px;
+  color: #7a7f9c;
+}
+
+.card-btn {
+  width: 120px;
+  background: #2f9e5c;
+  border-radius: 8px;
+  padding: 8px 10px;
+  text-align: left;
+  font-family: inherit;
+}
+
+.card-btn:hover:not(:disabled) {
+  background: #3ab873;
+}
+
+.card-name {
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 3px;
+}
+
+.card-desc {
+  font-size: 10px;
+  line-height: 1.3;
+  color: #e4f7ec;
+}
